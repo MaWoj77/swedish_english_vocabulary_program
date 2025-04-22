@@ -4,8 +4,8 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 import os
 
-from models import db
-from functions import GetWord
+from models import db, Noun
+from functions import GetWord, GetTranslation
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "config_secret_key"
@@ -23,6 +23,9 @@ migrate = Migrate(app, db)
 
 with app.app_context():
     db.create_all()
-    get_word = GetWord()
-    get_word.get_word()
+    if not db.session.query(Noun).all():
+        get_word = GetWord()
+        get_word.get_word()
+    translation = GetTranslation()
+    translation.translate()
 

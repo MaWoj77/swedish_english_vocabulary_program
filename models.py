@@ -28,18 +28,29 @@ class Verb(db.Model):
     supine = db.Column(db.String)
     imperative = db.Column(db.String)
 
-class Pronoun(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    pronoun = db.Column(db.String)
-    en_translation = db.Column(db.String)
-    indefinite_singular = db.Column(db.String)
-    definite_singular = db.Column(db.String)
-    indefinite_plural = db.Column(db.String)
-    definite_plural = db.Column(db.String)
-
 class Adverb(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     adverb = db.Column(db.String)
+    en_translation = db.Column(db.String)
+
+class ProperNoun(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    proper_noun = db.Column(db.String)
+    en_translation = db.Column(db.String)
+
+class Numeral(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    numeral = db.Column(db.String)
+    en_translation = db.Column(db.String)
+
+class Interjection(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    interjection = db.Column(db.String)
+    en_translation = db.Column(db.String)
+
+class Preposition(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    preposition = db.Column(db.String)
     en_translation = db.Column(db.String)
 
 # class Expressions(db.Model):
