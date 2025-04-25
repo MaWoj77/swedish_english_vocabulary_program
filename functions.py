@@ -15,9 +15,6 @@ class GetWord:
     def noun(self, inflection_table, baseform):
         sg_indef_nom = sg_def_nom = pl_indef_nom = pl_def_nom = None
 
-        # en_translation_ob = translator.translate_text(baseform, source_lang="SV", target_lang="EN-US")
-        # en_translation = en_translation_ob.text
-
         for item in inflection_table:
             form_type = item.get("msd")
             form = item.get("writtenForm")
@@ -31,7 +28,7 @@ class GetWord:
                 pl_def_nom = form
             else:
                 pass
-        new_record = Noun(noun=baseform, en_translation="-", indefinite_singular=sg_indef_nom,
+        new_record = Noun(baseform=baseform, en_translation="-", indefinite_singular=sg_indef_nom,
                           definite_singular=sg_def_nom, indefinite_plural=pl_indef_nom, definite_plural=pl_def_nom)
         db.session.add(new_record)
         db.session.commit()
@@ -50,7 +47,7 @@ class GetWord:
                 pos_indef_pl_nom = form
             else:
                 pass
-        new_record = Adjective(adjective=baseform, en_translation="-", common_singular=pos_indef_sg_u_nom,
+        new_record = Adjective(baseform=baseform, en_translation="-", common_singular=pos_indef_sg_u_nom,
                           neuter_singular=pos_indef_sg_n_nom, indefinite_plural=pos_indef_pl_nom)
         db.session.add(new_record)
         db.session.commit()
@@ -71,36 +68,36 @@ class GetWord:
                 imper = form
             else:
                 pass
-        new_record = Verb(verb=baseform, en_translation="-", present=pres_ind_aktiv,
+        new_record = Verb(baseform=baseform, en_translation="-", present=pres_ind_aktiv,
                           preterite=pret_ind_aktiv, supine=sup_aktiv, imperative=imper)
         db.session.add(new_record)
         db.session.commit()
 
     def adverb(self, baseform):
 
-        new_record = Adverb(adverb=baseform, en_translation="-")
+        new_record = Adverb(baseform=baseform, en_translation="-")
         db.session.add(new_record)
         db.session.commit()
 
     def proper_noun(self, baseform):
 
-        new_record = ProperNoun(proper_noun=baseform, en_translation="-")
+        new_record = ProperNoun(baseform=baseform, en_translation="-")
         db.session.add(new_record)
         db.session.commit()
 
     def numeral(self, baseform):
 
-        new_record = Numeral(numeral=baseform, en_translation="-")
+        new_record = Numeral(baseform=baseform, en_translation="-")
         db.session.add(new_record)
         db.session.commit()
 
     def interjection(self, baseform):
-        new_record = Interjection(interjection=baseform, en_translation="-")
+        new_record = Interjection(baseform=baseform, en_translation="-")
         db.session.add(new_record)
         db.session.commit()
 
     def preposition(self, baseform):
-        new_record = Preposition(preposition=baseform, en_translation="-")
+        new_record = Preposition(baseform=baseform, en_translation="-")
         db.session.add(new_record)
         db.session.commit()
 
@@ -122,7 +119,7 @@ class GetWord:
             scope = j_response.get("hits")
 
             if not scope:
-                print("aaaaaaa")
+                print("Done!")
                 print(response.request)
                 break
 
@@ -157,24 +154,38 @@ class GetWord:
 class GetTranslation:
     def __init__(self):
         self.url = "https://libretranslate.com/translate"
+        self.databases = [Noun, Verb, Adverb, Adjective, ProperNoun, Numeral, Interjection, Preposition]
 
-    def get_word_to_translate(self):
-        return Numeral.query.all()
+    def existing_translation(self):
+        existing_translation = True
+        for database in self.databases:
+            exist = database.query.filter(database.en_translation == "-")
+            if exist:
+                existing_translation = False
+        return existing_translation
+
+
+    def get_word_to_translate(self, database):
+        return database.query.filter(database.en_translation == "-")
 
     def translate(self):
-        scope = self.get_word_to_translate()
-        for item in scope:
-            word = item.numeral
-            en_translation_ob = translator.translate_text(word, source_lang="SV", target_lang="EN-US")
-            en_translation_text = en_translation_ob.text
-            item.en_translation = en_translation_text
-            db.session.commit()
-
-
-"""https://spraakbanken.gu.se/karp/?mode=saldom&lexicon=saldom&show=saldom:01HQMY8726SN5W354RSWEV9DFQ&tab=json&filter="""
-
-# res = "https://spraakbanken4.it.gu.se/karp/v7/resources/"
-#"https://spraakbanken4.it.gu.se/karp/v7/query/saldom"
-# reso = httpx.get(res)
-# resors = json.load(reso)
-# print(resors)
+        counter = 0
+        for database in self.databases:
+            scope = self.get_word_to_translate(database)
+            for item in scope:
+                if counter >= 100:
+                    print("100 requests - done")
+                    sleep(1)
+                    counter = 0
+                counter += 1
+                word = item.baseform
+                try:
+                    en_translation_ob = translator.translate_text(word, source_lang="SV", target_lang="EN-US")
+                    en_translation_text = en_translation_ob.text
+                    item.en_translation = en_translation_text
+                    db.session.commit()
+                except deepl.exceptions.TooManyRequestsException:
+                    print("TooManyRequestsException error")
+                    break
+                except Exception as e:
+                    print(e)

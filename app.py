@@ -27,5 +27,7 @@ with app.app_context():
         get_word = GetWord()
         get_word.get_word()
     translation = GetTranslation()
-    translation.translate()
+    existing_translation = translation.existing_translation()
+    if not existing_translation:
+        translation.translate()
 
