@@ -4,9 +4,13 @@
 
 {% block content %}
 
-<div class="list-group">
-  <button type="button" class="list-group-item list-group-item-action">ENGLISH ---> SWEDISH</button>
-  <button type="button" class="list-group-item list-group-item-action">SWEDISH ---> ENGLISH</button>
-</div>
+<form action="/dictionary" method="POST">
+  <select class="form-select" id="language" name="language" aria-label="Default select example">
+    <option value="1" selected>SWEDISH ---> ENGLISH</option>
+    <option value="2">ENGLISH ---> SWEDISH</option>
+  </select>
+  <input type="text" id="word_to_translate" name="text" required>
+  <button type="submit">Submit</button>
+</form>
 
 {% endblock %}

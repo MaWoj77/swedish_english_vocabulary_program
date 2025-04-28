@@ -1,4 +1,4 @@
-from flask import Blueprint, request, render_template
+from flask import Blueprint, request, render_template, g
 
 blueprint = Blueprint('blueprint', __name__)
 
@@ -8,6 +8,9 @@ def main_page():
 
 @blueprint.route("/dictionary", methods=["GET", "POST"])
 def dictionary():
+    language = request.form.get("language")
+    word_to_translate = request.form.get("word_to_translate")
+    g.get_translation.translation(language, word_to_translate)
     return render_template("dictionary.html")
 
 @blueprint.route("/flashcards", methods=["GET", "POST"])

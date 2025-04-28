@@ -1,6 +1,5 @@
 from routes import blueprint
-from flask import Flask, render_template, request, redirect, flash
-from flask_sqlalchemy import SQLAlchemy
+from flask import Flask, g
 from flask_migrate import Migrate
 import os
 
@@ -21,13 +20,17 @@ app.config["SQLALCHEMY_DATABASE_URI"] = f"sqlite:///{os.path.join(DB_FOLDER, "da
 db.init_app(app)
 migrate = Migrate(app, db)
 
+@app.before_request
+def before_request_function():
+    g.get_translation = GetTranslation()
+
 with app.app_context():
     db.create_all()
     if not db.session.query(Noun).all():
         get_word = GetWord()
         get_word.get_word()
-    translation = GetTranslation()
-    existing_translation = translation.existing_translation()
-    if not existing_translation:
-        translation.translate()
+    # translation = GetTranslation()
+    # existing_translation = translation.existing_translation()
+    # if not existing_translation:
+    #     translation.translate()
 
