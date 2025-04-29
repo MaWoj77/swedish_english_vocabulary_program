@@ -1,8 +1,11 @@
 from time import sleep
+from tkinter.font import names
 
 from flask import flash
 import httpx
 import deepl
+from sqlalchemy import column
+
 from models import db, Noun, Verb, Adverb, Adjective, ProperNoun, Numeral, Interjection, Preposition
 
 auth_key = "371bc5b9-3443-48ae-8398-7dcdd7dfec98:fx"
@@ -158,24 +161,48 @@ class GetTranslation:
     def get_swedish_structure_from_db(self, word):
         pass
 
+    def deepl_translation(self, word, source_lang, target_lang):
+        try:
+            translation_ob = translator.translate_text(word, source_lang=source_lang, target_lang=target_lang)
+            translation_text = translation_ob.text
+            flash("Congratulations! You've got a new word to learn.", category='success')
+            print(translation_text)
+            return translation_text
+        except Exception as e:
+            print(e)
+            flash("Upsss, something went wrong. Please, try again.")
+
     def get_translation_db_sv_to_en(self, word):
-        pass
+        exist = None
+        for database in self.databases:
+            exist = database.query.filter(database.baseform == word).first()
+            if exist:
+                break
+        if exist:
+            if exist.en_translation == "-":
+                translation = self.deepl_translation(word, "SV", "EN-US")
+                exist.en_translation = translation
+                db.session.commit()
+            else:
+                translation = exist.en_translation
+        else:
+            translation = self.deepl_translation(word, "SV", "EN-US")
+        print(translation)
 
     def get_translation_db_en_to_sv(self, word):
+        exist = db_source = None
         for database in self.databases:
             exist = database.query.filter(database.en_translation == word).first()
+            db_source = database
             if exist:
-                print("huraaaaaaaa")
-                # data = {column.name : getattr(exist, column.name) for column in database.__table__.columns if column.name != "id"}
-            else:
-                try:
-                    sv_translation_ob = translator.translate_text(word, source_lang="EN-US", target_lang="SV")
-                    sv_translation_text = sv_translation_ob.text
-                    flash("Congratulations! You've got a new word to learn.", category='success')
-                    return sv_translation_text
-                except Exception as e:
-                    print(e)
-                    flash("Upsss, something went wrong. Please, try again.")
+                break
+        if exist:
+            column_names = [column.name for column in db_source.__table__.columns if column.name != "id"]
+            data = {column : getattr(exist, column) for column in column_names}
+        else:
+            translation = self.deepl_translation(word, "EN", "SV")
+            data = {"baseform" : translation, "en_translation" : word}
+        return data
 
     def translation(self, language, word_to_translate):
         if language == "1":

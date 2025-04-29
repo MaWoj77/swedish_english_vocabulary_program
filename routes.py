@@ -9,7 +9,7 @@ def main_page():
 @blueprint.route("/dictionary", methods=["GET", "POST"])
 def dictionary():
     language = request.form.get("language")
-    word_to_translate = request.form.get("word_to_translate")
+    word_to_translate = str(request.form.get("word_to_translate"))
     g.get_translation.translation(language, word_to_translate)
     return render_template("dictionary.html")
 
