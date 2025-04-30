@@ -21,16 +21,19 @@ class GetWord:
         for item in inflection_table:
             form_type = item.get("msd")
             form = item.get("writtenForm")
-            if form_type == "sg indef nom":
-                sg_indef_nom = form
-            elif form_type == "sg def nom":
-                sg_def_nom = form
-            elif form_type == "pl indef nom":
-                pl_indef_nom = form
-            elif form_type == "pl def nom":
-                pl_def_nom = form
-            else:
-                pass
+
+            match form_type:
+                case "sg indef nom":
+                    sg_indef_nom = form
+                case "sg def nom":
+                    sg_def_nom = form
+                case "pl indef nom":
+                    pl_indef_nom = form
+                case "pl def nom":
+                    pl_def_nom = form
+                case _:
+                    pass
+
         new_record = Noun(baseform=baseform, en_translation="-", indefinite_singular=sg_indef_nom,
                           definite_singular=sg_def_nom, indefinite_plural=pl_indef_nom, definite_plural=pl_def_nom)
         db.session.add(new_record)
@@ -42,14 +45,15 @@ class GetWord:
         for item in inflection_table:
             form_type = item.get("msd")
             form = item.get("writtenForm")
-            if form_type == "pos indef sg u nom":
-                pos_indef_sg_u_nom = form
-            elif form_type == "pos indef sg n nom":
-                pos_indef_sg_n_nom = form
-            elif form_type == "pos indef pl nom":
-                pos_indef_pl_nom = form
-            else:
-                pass
+            match form_type:
+                case "pos indef sg u nom":
+                    pos_indef_sg_u_nom = form
+                case "pos indef sg n nom":
+                    pos_indef_sg_n_nom = form
+                case "pos indef pl nom":
+                    pos_indef_pl_nom = form
+                case _:
+                    pass
         new_record = Adjective(baseform=baseform, en_translation="-", common_singular=pos_indef_sg_u_nom,
                           neuter_singular=pos_indef_sg_n_nom, indefinite_plural=pos_indef_pl_nom)
         db.session.add(new_record)
@@ -61,16 +65,17 @@ class GetWord:
         for item in inflection_table:
             form_type = item.get("msd")
             form = item.get("writtenForm")
-            if form_type == "pres ind aktiv":
-                pres_ind_aktiv = form
-            elif form_type == "pret ind aktiv":
-                pret_ind_aktiv = form
-            elif form_type == "sup aktiv":
-                sup_aktiv = form
-            elif form_type == "imper":
-                imper = form
-            else:
-                pass
+            match form_type:
+                case "pres ind aktiv":
+                    pres_ind_aktiv = form
+                case "pret ind aktiv":
+                    pret_ind_aktiv = form
+                case "sup aktiv":
+                    sup_aktiv = form
+                case "imper":
+                    imper = form
+                case _:
+                    pass
         new_record = Verb(baseform=baseform, en_translation="-", present=pres_ind_aktiv,
                           preterite=pret_ind_aktiv, supine=sup_aktiv, imperative=imper)
         db.session.add(new_record)
@@ -218,9 +223,10 @@ class GetTranslation:
         return data
 
     def translation(self, language, word_to_translate):
-        if language == "1":
-            return self.get_translation_db_sv_to_en(word_to_translate)
-        elif language == "2":
-            return self.get_translation_db_en_to_sv(word_to_translate)
-        else:
-            return {}
+        match language:
+            case "1":
+                return self.get_translation_db_sv_to_en(word_to_translate)
+            case "2":
+                return self.get_translation_db_en_to_sv(word_to_translate)
+            case _:
+                return {}
