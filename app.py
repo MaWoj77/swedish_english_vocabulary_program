@@ -29,6 +29,7 @@ with app.app_context():
     if not db.session.query(Noun).all():
         get_word = GetWord()
         get_word.get_word()
+
     # translation = GetTranslation()
     # existing_translation = translation.existing_translation()
     # if not existing_translation:

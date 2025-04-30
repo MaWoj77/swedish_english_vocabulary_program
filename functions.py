@@ -210,6 +210,8 @@ class GetTranslation:
         else:
             pass
 
+
+
     # def existing_translation(self):
     #     existing_translation = True
     #     for database in self.databases:
