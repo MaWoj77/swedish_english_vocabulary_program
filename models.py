@@ -52,4 +52,3 @@ class Preposition(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     baseform = db.Column(db.String)
     en_translation = db.Column(db.String)
-
