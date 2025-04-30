@@ -53,6 +53,7 @@ class Preposition(db.Model):
     baseform = db.Column(db.String)
     en_translation = db.Column(db.String)
 
+
 # class Expressions(db.Model):
 #     id = db.Column(db.Integer, primary_key=True)
 #     expression = db.Column(db.String)
