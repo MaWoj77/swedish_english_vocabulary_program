@@ -1,5 +1,3 @@
-from time import sleep
-
 from flask import flash
 import httpx
 import deepl
@@ -164,84 +162,61 @@ class GetTranslation:
             translation_ob = translator.translate_text(word, source_lang=source_lang, target_lang=target_lang)
             translation_text = translation_ob.text
             flash("Congratulations! You've got a new word to learn.", category='success')
-            print(translation_text)
             return translation_text
         except Exception as e:
             print(e)
             flash("Upsss, something went wrong. Please, try again.")
 
     def get_translation_db_sv_to_en(self, word):
-        exist = None
+        exist = db_source = None
         for database in self.databases:
             exist = database.query.filter(database.baseform == word).first()
             if exist:
+                db_source = database
                 break
         if exist:
             if exist.en_translation == "-":
                 translation = self.deepl_translation(word, "SV", "EN-US")
                 exist.en_translation = translation
                 db.session.commit()
-            else:
-                translation = exist.en_translation
+            column_names = [column.name for column in db_source.__table__.columns if column.name != "id"]
+            data = {column : getattr(exist, column) for column in column_names}
         else:
             translation = self.deepl_translation(word, "SV", "EN-US")
-        print(translation)
+            data = {"baseform": word, "en_translation": translation}
+        return data
 
     def get_translation_db_en_to_sv(self, word):
         exist = db_source = None
         for database in self.databases:
             exist = database.query.filter(database.en_translation == word).first()
-            db_source = database
             if exist:
+                db_source = database
                 break
         if exist:
             column_names = [column.name for column in db_source.__table__.columns if column.name != "id"]
             data = {column : getattr(exist, column) for column in column_names}
         else:
-            translation = self.deepl_translation(word, "EN", "SV")
-            data = {"baseform" : translation, "en_translation" : word}
+            translation = self.deepl_translation(word, "EN", "SV").lower()
+            exist = db_source = None
+            for database in self.databases:
+                exist = database.query.filter(database.baseform == translation).first()
+                if exist:
+                    db_source = database
+                    break
+            if exist:
+                exist.en_translation = word
+                db.session.commit()
+                column_names = [column.name for column in db_source.__table__.columns if column.name != "id"]
+                data = {column: getattr(exist, column) for column in column_names}
+            else:
+                data = {"baseform" : translation, "en_translation" : word}
         return data
 
     def translation(self, language, word_to_translate):
         if language == "1":
-            self.get_translation_db_sv_to_en(word_to_translate)
+            return self.get_translation_db_sv_to_en(word_to_translate)
         elif language == "2":
-            self.get_translation_db_en_to_sv(word_to_translate)
+            return self.get_translation_db_en_to_sv(word_to_translate)
         else:
-            pass
-
-
-
-    # def existing_translation(self):
-    #     existing_translation = True
-    #     for database in self.databases:
-    #         exist = database.query.filter(database.en_translation == "-")
-    #         if exist:
-    #             existing_translation = False
-    #     return existing_translation
-
-
-    # def get_word_to_translate(self, database):
-    #     return database.query.filter(database.en_translation == "-")
-    #
-    # def translate(self):
-    #     counter = 0
-    #     for database in self.databases:
-    #         scope = self.get_word_to_translate(database)
-    #         for item in scope:
-    #             if counter >= 100:
-    #                 print("100 requests - done")
-    #                 sleep(1)
-    #                 counter = 0
-    #             counter += 1
-    #             word = item.baseform
-    #             try:
-    #                 en_translation_ob = translator.translate_text(word, source_lang="SV", target_lang="EN-US")
-    #                 en_translation_text = en_translation_ob.text
-    #                 item.en_translation = en_translation_text
-    #                 db.session.commit()
-    #             except deepl.exceptions.TooManyRequestsException:
-    #                 print("TooManyRequestsException error")
-    #                 break
-    #             except Exception as e:
-    #                 print(e)
+            return {}

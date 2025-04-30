@@ -8,11 +8,9 @@ def main_page():
 
 @blueprint.route("/dictionary", methods=["GET", "POST"])
 def dictionary():
-    language = request.form.get("language")
-    word_to_translate = str(request.form.get("word_to_translate"))
-    g.get_translation.translation(language, word_to_translate)
-    return render_template("dictionary.html")
-
-@blueprint.route("/flashcards", methods=["GET", "POST"])
-def flashcards():
-    return render_template("flashcards.html")
+    data = {}
+    if request.method == "POST":
+        language = request.form.get("language")
+        word_to_translate = str(request.form.get("word_to_translate"))
+        data = g.get_translation.translation(language, word_to_translate)
+    return render_template("dictionary.html", data=data)

@@ -13,4 +13,14 @@
   <button type="submit">Submit</button>
 </form>
 
+<br><br><br>
+
+<table class="table table-striped">
+{% for key, value in data.items() %}
+    <tr>
+        <td>{{ key }} : {{ value }}</td>
+    </tr>
+{% endfor %}
+</table>
+
 {% endblock %}
