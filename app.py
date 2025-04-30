@@ -33,4 +33,3 @@ with app.app_context():
     # existing_translation = translation.existing_translation()
     # if not existing_translation:
     #     translation.translate()
-
