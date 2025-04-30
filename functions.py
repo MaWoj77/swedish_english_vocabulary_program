@@ -1,10 +1,8 @@
 from time import sleep
-from tkinter.font import names
 
 from flask import flash
 import httpx
 import deepl
-from sqlalchemy import column
 
 from models import db, Noun, Verb, Adverb, Adjective, ProperNoun, Numeral, Interjection, Preposition
 
