@@ -1,10 +1,16 @@
+import os
+
 from flask import flash
+from dotenv import load_dotenv
+import os
 import httpx
 import deepl
 
 from models import db, Noun, Verb, Adverb, Adjective, ProperNoun, Numeral, Interjection, Preposition
 
-auth_key = "371bc5b9-3443-48ae-8398-7dcdd7dfec98:fx"
+load_dotenv()
+
+auth_key = os.getenv("auth_key")
 translator = deepl.Translator(auth_key)
 
 class GetWord:
