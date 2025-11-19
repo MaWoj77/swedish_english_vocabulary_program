@@ -1,6 +1,7 @@
 🇸🇪 Swedish Vocabulary Trainer — Flask App
 
 
+
 A Flask-based web application that builds a Swedish vocabulary database from Språkbanken Karp (SALDOM) and provides live English–Swedish translations using DeepL and a local database cache.
 It automatically extracts grammatical forms for nouns, verbs, adjectives, and other parts of speech and stores them in a local SQLite database.
 
