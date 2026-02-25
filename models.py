@@ -52,3 +52,10 @@ class Preposition(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     baseform = db.Column(db.String)
     en_translation = db.Column(db.String)
+
+class UserWord(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    word_id = db.Column(db.Integer, nullable=False)
+    word_type = db.Column(db.String, nullable=False)
+    baseform = db.Column(db.String, nullable=False)
+    flashcard = db.Column(db.Boolean, default=True)

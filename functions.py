@@ -222,10 +222,16 @@ class GetTranslation:
                 data = {"baseform" : translation, "en_translation" : word}
         return data
 
+    def save_user_word(self, data):
+        baseform = data.get("baseform")
+
+
     def translation(self, language, word_to_translate):
         match language:
             case "1":
-                return self.get_translation_db_sv_to_en(word_to_translate)
+                data = self.get_translation_db_sv_to_en(word_to_translate)
+                self.save_user_word(data)
+                return data
             case "2":
                 return self.get_translation_db_en_to_sv(word_to_translate)
             case _:
