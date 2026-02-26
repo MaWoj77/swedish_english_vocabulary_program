@@ -3,7 +3,7 @@ from flask import Flask, g
 from flask_migrate import Migrate
 import os
 
-from models import db, Noun
+from models import db, Noun, UserWord
 from functions import GetWord, GetTranslation
 
 app = Flask(__name__)

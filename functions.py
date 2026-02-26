@@ -195,9 +195,9 @@ class GetTranslation:
         else:
             translation = self.deepl_translation(word, "SV", "EN-US")
             data = {"baseform": word, "en_translation": translation}
-        data["id"] = exist.id
-        data["table_name"] = db_source.__tablename__
-        return data
+        id = exist.id
+        word_type = db_source.__tablename__
+        return data, id, word_type
 
     def get_translation_db_en_to_sv(self, word):
         exist = db_source = None
@@ -224,26 +224,26 @@ class GetTranslation:
                 data = {column: getattr(exist, column) for column in column_names}
             else:
                 data = {"baseform" : translation, "en_translation" : word}
-        data["id"] = exist.id
-        data["word_type"] = db_source.__tablename__
-        return data
+        word_id = exist.id
+        word_type = db_source.__tablename__
+        return data, word_id, word_type
 
-    def save_user_word(self, data):
+    def save_user_word(self, data, id, word_type):
         baseform = data.get("baseform")
         date = datetime.datetime.today()
-        word_id = data.get("id")
-        word_type = data.get("word_type")
-        new_record = UserWord(word_id=word_id, word_type=word_type, baseform=baseform, date=date)
+        new_record = UserWord(word_id=id, word_type=word_type, baseform=baseform, date=date)
         db.session.add(new_record)
         db.session.commit()
 
     def translation(self, language, word_to_translate):
         match language:
             case "1":
-                data = self.get_translation_db_sv_to_en(word_to_translate)
-                self.save_user_word(data)
+                data, word_id, word_type = self.get_translation_db_sv_to_en(word_to_translate)
+                self.save_user_word(data, word_id, word_type)
                 return data
             case "2":
-                return self.get_translation_db_en_to_sv(word_to_translate)
+                data, word_id, word_type = self.get_translation_db_en_to_sv(word_to_translate)
+                self.save_user_word(data, word_id, word_type)
+                return data
             case _:
                 return {}
