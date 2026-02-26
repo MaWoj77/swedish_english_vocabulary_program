@@ -59,3 +59,4 @@ class UserWord(db.Model):
     word_type = db.Column(db.String, nullable=False)
     baseform = db.Column(db.String, nullable=False)
     flashcard = db.Column(db.Boolean, default=True)
+    date = db.Column(db.Date)

@@ -1,10 +1,12 @@
+import datetime
+
 from flask import flash
 from dotenv import load_dotenv
 import os
 import httpx
 import deepl
 
-from models import db, Noun, Verb, Adverb, Adjective, ProperNoun, Numeral, Interjection, Preposition
+from models import db, Noun, Verb, Adverb, Adjective, ProperNoun, Numeral, Interjection, Preposition, UserWord
 
 load_dotenv()
 
@@ -193,6 +195,8 @@ class GetTranslation:
         else:
             translation = self.deepl_translation(word, "SV", "EN-US")
             data = {"baseform": word, "en_translation": translation}
+        data["id"] = exist.id
+        data["table_name"] = db_source.__tablename__
         return data
 
     def get_translation_db_en_to_sv(self, word):
@@ -220,11 +224,18 @@ class GetTranslation:
                 data = {column: getattr(exist, column) for column in column_names}
             else:
                 data = {"baseform" : translation, "en_translation" : word}
+        data["id"] = exist.id
+        data["word_type"] = db_source.__tablename__
         return data
 
     def save_user_word(self, data):
         baseform = data.get("baseform")
-
+        date = datetime.datetime.today()
+        word_id = data.get("id")
+        word_type = data.get("word_type")
+        new_record = UserWord(word_id=word_id, word_type=word_type, baseform=baseform, date=date)
+        db.session.add(new_record)
+        db.session.commit()
 
     def translation(self, language, word_to_translate):
         match language:
