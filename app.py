@@ -29,3 +29,6 @@ with app.app_context():
     if not db.session.query(Noun).all():
         get_word = GetWord()
         get_word.get_word()
+
+    # UserWord.__table__.create(db.engine)
+    # UserWord.__table__.drop(db.engine)

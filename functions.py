@@ -228,10 +228,14 @@ class GetTranslation:
         word_type = db_source.__tablename__
         return data, word_id, word_type
 
-    def save_user_word(self, data, id, word_type):
-        baseform = data.get("baseform")
+    def save_user_word(self, data, word_id, word_type):
+        if not word_id or not word_type:
+            return
+        exist = UserWord.query.filter(UserWord.word_id == word_id, UserWord.word_type == word_type).first()
+        if exist:
+            return
         date = datetime.datetime.today()
-        new_record = UserWord(word_id=id, word_type=word_type, baseform=baseform, date=date)
+        new_record = UserWord(word_id=word_id, word_type=word_type, baseform=data.get("baseform"), date=date)
         db.session.add(new_record)
         db.session.commit()
 
