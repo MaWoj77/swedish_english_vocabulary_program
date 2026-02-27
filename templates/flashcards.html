@@ -1,0 +1,38 @@
+{% extends 'base_page.html' %}
+
+{% set title='flashcards' %}
+
+{% block content %}
+
+<form action="/flashcards" method="POST">
+  <p>Language:</p>
+  <select class="form-select" id="language" name="language" aria-label="Default select example">
+    <option value="sv-en" selected>SWEDISH ---> ENGLISH</option>
+    <option value="en-sv">ENGLISH ---> SWEDISH</option>
+  </select>
+  <p>Part of speach:</p>
+  <select class="form-select" id="type" name="type" aria-label="Default select example">
+    <option value="all">All</option>
+    <option value="noun" selected>Noun</option>
+    <option value="verb">Verb</option>
+    <option value="adverb">Adverb</option>
+    <option value="adjective">Adjective</option>
+    <option value="propernoun">ProperNoun</option>
+    <option value="numeral">Numeral</option>
+    <option value="interjection">Interjection</option>
+    <option value="preposition">Preposition</option>
+  </select>
+  <button type="submit">Submit</button>
+</form>
+
+<br><br><br>
+
+<table class="table table-striped">
+{% for key, value in data.items() %}
+    <tr>
+        <td>{{ key }} : {{ value }}</td>
+    </tr>
+{% endfor %}
+</table>
+
+{% endblock %}

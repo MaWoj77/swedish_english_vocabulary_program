@@ -14,3 +14,9 @@ def dictionary():
         word_to_translate = str(request.form.get("word_to_translate"))
         data = g.get_translation.translation(language, word_to_translate)
     return render_template("dictionary.html", data=data)
+
+@blueprint.route("/flashcards", methods=["GET", "POST"])
+def flashcards():
+    if request.method == "POST":
+        pass
+    return render_template("flashcards.html")

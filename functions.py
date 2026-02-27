@@ -251,3 +251,6 @@ class GetTranslation:
                 return data
             case _:
                 return {}
+
+class Flashcards:
+    pass
