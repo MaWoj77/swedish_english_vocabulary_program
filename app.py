@@ -4,7 +4,7 @@ from flask_migrate import Migrate
 import os
 
 from models import db, Noun, UserWord
-from functions import GetWord, GetTranslation
+from functions import GetWord, GetTranslation, Flashcards
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = "config_secret_key"
@@ -23,6 +23,7 @@ migrate = Migrate(app, db)
 @app.before_request
 def before_request_function():
     g.get_translation = GetTranslation()
+    g.flashcards = Flashcards()
 
 with app.app_context():
     db.create_all()

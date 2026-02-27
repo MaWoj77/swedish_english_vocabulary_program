@@ -17,6 +17,9 @@ def dictionary():
 
 @blueprint.route("/flashcards", methods=["GET", "POST"])
 def flashcards():
+    flashcard = {}
     if request.method == "POST":
-        pass
-    return render_template("flashcards.html")
+        language = request.form.get("language")
+        word_type = request.form.get("word_type")
+        flashcard, language = g.flashcards.flashcard_generating(language, word_type)
+    return render_template("flashcards.html", flashcard=flashcard)

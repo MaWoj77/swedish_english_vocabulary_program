@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 import os
 import httpx
 import deepl
+from sqlalchemy.event import listens_for
 
 from models import db, Noun, Verb, Adverb, Adjective, ProperNoun, Numeral, Interjection, Preposition, UserWord
 
@@ -253,4 +254,8 @@ class GetTranslation:
                 return {}
 
 class Flashcards:
-    pass
+    def flashcard_generating(self, language, word_type):
+        list_of_words = {}
+        if word_type != "all":
+            list_of_words = UserWord.query.filter(UserWord.word_type == word_type).all()
+        return list_of_words, language
