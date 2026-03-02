@@ -21,5 +21,5 @@ def flashcards():
     if request.method == "POST":
         language = request.form.get("language")
         word_type = request.form.get("word_type")
-        flashcard, language = g.flashcards.flashcard_generating(language, word_type)
+        flashcard = g.flashcards.flashcard_generating(language, word_type)
     return render_template("flashcards.html", flashcard=flashcard)

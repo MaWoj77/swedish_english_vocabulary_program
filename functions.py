@@ -1,4 +1,5 @@
 import datetime
+import random
 
 from flask import flash
 from dotenv import load_dotenv
@@ -8,6 +9,7 @@ import deepl
 from sqlalchemy.event import listens_for
 
 from models import db, Noun, Verb, Adverb, Adjective, ProperNoun, Numeral, Interjection, Preposition, UserWord
+from routes import flashcards
 
 load_dotenv()
 
@@ -255,7 +257,33 @@ class GetTranslation:
 
 class Flashcards:
     def flashcard_generating(self, language, word_type):
-        list_of_words = {}
+        query = UserWord.query
         if word_type != "all":
-            list_of_words = UserWord.query.filter(UserWord.word_type == word_type).all()
-        return list_of_words, language
+            list_of_words = query.filter(UserWord.word_type == word_type)
+        else:
+            list_of_words = query.filter()
+
+        words = list_of_words.all()
+
+        if not list_of_words:
+            return None
+
+        word = random.choice(words)
+
+        # structure = table.query.filter(word).first()
+
+        swedish = ...
+        english = ...
+
+        if language == "sv-en":
+            flashcard = {
+                "front" : swedish,
+                "back" : english
+            }
+        else:
+            flashcard = {
+                "front" : english,
+                "back" : swedish
+            }
+
+        return flashcard
