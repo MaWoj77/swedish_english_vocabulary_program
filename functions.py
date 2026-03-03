@@ -265,7 +265,7 @@ class Flashcards:
 
         words = list_of_words.all()
 
-        if not list_of_words:
+        if not words:
             return None
 
         word = random.choice(words)
