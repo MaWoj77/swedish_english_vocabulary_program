@@ -257,23 +257,37 @@ class GetTranslation:
 
 class Flashcards:
     def flashcard_generating(self, language, word_type):
+        word_type_map = {
+            "noun": Noun,
+            "verb": Verb,
+            "adverb": Adverb,
+            "adjective": Adjective,
+            "propernoun": ProperNoun,
+            "numeral": Numeral,
+            "interjection": Interjection,
+            "preposition": Preposition
+        }
+
         query = UserWord.query
         if word_type != "all":
             list_of_words = query.filter(UserWord.word_type == word_type)
         else:
             list_of_words = query.filter()
-
         words = list_of_words.all()
-
         if not words:
             return None
-
         word = random.choice(words)
-
-        # structure = table.query.filter(word).first()
-
-        swedish = ...
-        english = ...
+        table = word_type_map.get(word.word_type)
+        if not table:
+            return None
+        data = table.query.filter(table.id == word.word_id).first()
+        if not data:
+            return None
+        swedish = english = None
+        if data:
+            column_names = [column.name for column in table.__table__.columns if column.name != "id" and column.name != "en_translation"]
+            swedish = {column: getattr(data, column) for column in column_names}
+            english = data.en_translation
 
         if language == "sv-en":
             flashcard = {
